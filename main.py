@@ -14,6 +14,8 @@ timer = 0
 statesResult = False
 startGame = False
 
+# Start Counter For Score
+score = [0, 0] # [AI, Player]
 while True:
     # Check background Image Inside Loop, So that when User update Value It changed
     bgImg = cv2.imread('resources/bg.jpg')
@@ -43,7 +45,6 @@ while True:
                     # Get First Hand, As we get hands in list
                     hand = hands[0]
                     fingers = detector.fingersUp(myHand=hand)
-                    print(fingers)
                     if fingers == [0,0,0,0,0]:
                         playerMove = 1 # Rock
                     elif fingers == [1,1,1,1,1]:
@@ -53,12 +54,22 @@ while True:
                 
                 # Choose Random Choice
                 ai_choice = random.randint(1,3)
+        
                 # Load AI Image
                 aiImage = cv2.imread(f'resources/{ai_choice}.png', -1)
 
                 # Over Lay AI Image
                 bgImg = cvzone.overlayPNG(bgImg, aiImage, (850, 230))
-                
+
+                    
+                if (playerMove == 1 and ai_choice == 3) or (playerMove == 2 and ai_choice == 1) or (playerMove == 3 and ai_choice == 2):
+                    score[1] += 1                    
+                    
+                    
+                elif (playerMove == 3 and ai_choice == 1) or (playerMove == 1 and ai_choice == 2) or (playerMove == 2 and ai_choice == 3):
+                    score[0] += 1
+ 
+ 
         else:    
             cv2.putText(bgImg, "Play: ", (603,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
             cv2.putText(bgImg, "p", (660,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
@@ -77,18 +88,19 @@ while True:
         # Over Lay AI Image
         bgImg = cvzone.overlayPNG(bgImg, aiImage, (850, 230))
 
+    cv2.putText(bgImg, str(score[1]), (496, 131), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,1.2, (0,255,0), 4) # Update Player Score
+    cv2.putText(bgImg, str(score[0]), (1082, 131), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,1.2, (255,0,255), 4) # Update AI Score
     # Assign the resized imageScale to the region in bgImg
     bgImg[145:580, 111:576] = imageScale
 
     cv2.imshow("BG Image", bgImg)
-    
+
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q') or key == ord('Q'):
         break 
 
     elif key == ord('P') or key == ord('p'):
         startGame = True
-        print("Game is Started")
         initialTime = time.time()
         statesResult = False
 
