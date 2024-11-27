@@ -39,10 +39,10 @@ while True:
     if not r:
         break
     
-    imageScale = cv2.resize(frame, (0, 0), None, 0.95, 0.93)
-    imageScale = imageScale[80:540, 85:520]
-    # Resize imageScale to fit the target region in bgImg (465x435)
-    imageScale = cv2.resize(imageScale, (465, 435))
+    # Resize and crop webcam feed
+    frame = cv2.resize(frame, (0, 0), fx=0.95, fy=0.93)
+    frame = frame[80:540, 85:520]
+    frame = cv2.resize(frame, (465, 435))
 
     # We Detect Hand On Scale Image
     hands, image = detector.findHands(imageScale) if startGame else (None, None)
