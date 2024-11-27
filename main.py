@@ -1,5 +1,7 @@
+import cv2
+import time
 from cvzone.HandTrackingModule import HandDetector
-import cvzone, cv2
+import cvzone
 import random
 
 # Initialize webcam
@@ -18,6 +20,7 @@ playerMove = None
 score = [0, 0]  # [AI, Player]
 maxScore = 5  # Set max score for the game
 resultText = ""
+result = None 
 
 # Function to determine the winner
 def determine_winner(player, ai):
@@ -31,97 +34,127 @@ def determine_winner(player, ai):
     else:
         resultText = "It's a Draw!"
         return 0  # Draw
-    
+
+# Main game loop
 while True:
-    # Check background Image Inside Loop, So that when User update Value It changed
-    bgImg = cv2.imread('resources/bg.jpg')
-    r, frame = cam.read()
-    if not r:
+    # Load background image
+    bgImg = cv2.imread("resources/bg.jpg")
+    ret, frame = cam.read()
+    if not ret:
         break
-    
+
     # Resize and crop webcam feed
     frame = cv2.resize(frame, (0, 0), fx=0.95, fy=0.93)
     frame = frame[80:540, 85:520]
     frame = cv2.resize(frame, (465, 435))
 
-    # We Detect Hand On Scale Image
-    hands, image = detector.findHands(imageScale) if startGame else (None, None)
+    # Detect hands if game is running
+    hands, image = detector.findHands(frame) if startGame else (None, None)
 
     if startGame:
-        if statesResult is False:
+        if not stateResult:
             timer = time.time() - initialTime
-            cv2.putText(bgImg, str(int(timer)), (625,365), cv2.FONT_HERSHEY_PLAIN, 4, (255,0,255), 3)
+            cv2.putText(bgImg, f"{int(4 - timer)}", (625,365), cv2.FONT_HERSHEY_PLAIN, 4, (255,0,255), 3)
 
-            if timer >= int(4):
-                statesResult = True
+            if timer > 3:  # Timer for the round
+                stateResult = True
                 timer = 0
 
-                # Check For Fingers
+                # Player move
                 if hands:
-                    # Get First Hand, As we get hands in list
                     hand = hands[0]
-                    fingers = detector.fingersUp(myHand=hand)
-                    if fingers == [0,0,0,0,0]:
-                        playerMove = 1 # Rock
-                    elif fingers == [1,1,1,1,1]:
-                        playerMove = 2 # Seccior
-                    elif fingers == [0,1,1,0,0]:
-                        playerMove = 3 # Seccior
-                
-                # Choose Random Choice
-                ai_choice = random.randint(1,3)
+                    fingers = detector.fingersUp(hand)
+                    if fingers == [0, 0, 0, 0, 0]:
+                        playerMove = 1  # Rock
+                    elif fingers == [1, 1, 1, 1, 1]:
+                        playerMove = 2  # Paper
+                    elif fingers == [0, 1, 1, 0, 0]:
+                        playerMove = 3  # Scissors
+                    else:
+                        playerMove = None  # Invalid move
+                        resultText = "Invalid Move!"  # Show invalid move message
+                else:
+                    playerMove = None  # No hand detected
+                    resultText = "No Hand Detected!"  # No hand detected message
+
+                # AI move
+                aiMove = random.randint(1, 3)
+
+                # Determine winner
+                if playerMove:
+                    result = determine_winner(playerMove, aiMove)
+                    if result == 1:
+                        score[1] += 1
+                    elif result == -1:
+                        score[0] += 1
+
+                # Load and overlay AI image
+                aiImg = cv2.imread(f"resources/{aiMove}.png", -1)
+                bgImg = cvzone.overlayPNG(bgImg, aiImg, (850, 230))
+            
+        else: 
+            if max(score) < maxScore:   
+                cv2.putText(bgImg, "Play: ", (603,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
+                cv2.putText(bgImg, "p", (660,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
+                cv2.putText(bgImg, "Quit: ", (603,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
+                cv2.putText(bgImg, "q", (660,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
         
-                # Load AI Image
-                aiImage = cv2.imread(f'resources/{ai_choice}.png', -1)
-
-                # Over Lay AI Image
-                bgImg = cvzone.overlayPNG(bgImg, aiImage, (850, 230))
-
-                    
-                if (playerMove == 1 and ai_choice == 3) or (playerMove == 2 and ai_choice == 1) or (playerMove == 3 and ai_choice == 2):
-                    score[1] += 1                    
-                    
-                    
-                elif (playerMove == 3 and ai_choice == 1) or (playerMove == 1 and ai_choice == 2) or (playerMove == 2 and ai_choice == 3):
-                    score[0] += 1
- 
- 
-        else:    
-            cv2.putText(bgImg, "Play: ", (603,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
-            cv2.putText(bgImg, "p", (660,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
-            cv2.putText(bgImg, "Quit: ", (603,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
-            cv2.putText(bgImg, "q", (660,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
+        if max(score) < maxScore:
+            # Show results
+            if result == 1 or result == -1:
+                cv2.putText(bgImg, resultText, (584, 630), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 0), 4)
+                result = None
+            else:
+                cv2.putText(bgImg, resultText, (565, 630), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 0), 4)
+                
     else:    
-        cv2.putText(bgImg, "Play: ", (603,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
-        cv2.putText(bgImg, "p", (660,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
+        # Display game over if max score reached
+        if max(score) < maxScore:
+            cv2.putText(bgImg, "Press 'P' to Play", (480, 630), cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 4)
+
+    # If it is showing Result, Overlay PNG
+    if stateResult:
+        # Over Lay AI Image
+        bgImg = cvzone.overlayPNG(bgImg, aiImg, (850, 230))
+
+    # Update scores and instructions
+    cv2.putText(bgImg, f"{score[1]}", (496, 131), cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
+    cv2.putText(bgImg, f"{score[0]}", (1082, 131), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
+
+    # Display game over if max score reached
+    if max(score) >= maxScore:
+        winner = "Player" if score[1] > score[0] else "AI"
+        cv2.putText(bgImg, f"Game Over! {winner} Wins!", (420, 630), cv2.FONT_HERSHEY_COMPLEX, 1.4, (0, 255, 255), 5)
+        cv2.putText(bgImg, "Restart: ", (600,340), cv2.FONT_HERSHEY_PLAIN, 1, (100,250,55), 1)
+        cv2.putText(bgImg, "r", (670,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
         cv2.putText(bgImg, "Quit: ", (603,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
         cv2.putText(bgImg, "q", (660,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
-                
-    # If it is showing Result, Overlay PNG
-    if statesResult:
-        # Over Lay AI Image
-        bgImg = cvzone.overlayPNG(bgImg, aiImage, (850, 230))
+        # Apply the Summer DeepGreen
+        bgImg = cv2.applyColorMap(bgImg, cv2.COLORMAP_DEEPGREEN)
+        startGame = False
 
-    cv2.putText(bgImg, str(score[1]), (496, 131), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,1.2, (0,255,0), 4) # Update Player Score
-    cv2.putText(bgImg, str(score[0]), (1082, 131), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,1.2, (255,0,255), 4) # Update AI Score
-  
-    
-    # Apply the Summer DeepGreen
-    imageScale = cv2.applyColorMap(imageScale, cv2.COLORMAP_DEEPGREEN) if startGame and statesResult else cv2.applyColorMap(imageScale, cv2.COLORMAP_INFERNO)
+     # Apply the Summer DeepGreen
+    frame = cv2.applyColorMap(frame, cv2.COLORMAP_DEEPGREEN) if startGame and not stateResult else cv2.applyColorMap(frame, cv2.COLORMAP_INFERNO)
 
-  # Assign the resized imageScale to the region in bgImg
-    bgImg[145:580, 111:576] = imageScale
-    bgImg = cv2.resize(bgImg, (800, 580))
-    cv2.imshow("BG Image", bgImg)
+    # Overlay the webcam feed
+    bgImg[145:580, 111:576] = frame
+    bgImg = cv2.resize(bgImg, (950, 650))
+    cv2.imshow("Rock Paper Scissors", bgImg)
 
+    # Key press handling
     key = cv2.waitKey(1) & 0xFF
-    if key == ord('q') or key == ord('Q'):
-        break 
-
-    elif key == ord('P') or key == ord('p'):
+    if key == ord("q"):
+        break
+    elif key == ord("p"):
         startGame = True
         initialTime = time.time()
-        statesResult = False
+        stateResult = False
+        resultText = ""
+    elif key == ord("r"):
+        score = [0, 0]
+        startGame = False
+        stateResult = False
 
+# Release resources
 cam.release()
 cv2.destroyAllWindows()
