@@ -9,6 +9,11 @@ bgImg = cv2.imread('resources/bg.jpg')
 # Create Instance of HandDetector
 detector = HandDetector(maxHands=1) # As we need only one hand for Game
 
+# We writer timer and states for game
+timer = 0
+statesResult = False
+startGame = False
+
 while True:
     r, frame = cam.read()
     if not r:
@@ -22,13 +27,24 @@ while True:
     # We Detect Hand On Scale Image
     hands, image = detector.findHands(imageScale)
 
-    # Check For Fingers
-    if hands:
-        # Get First Hand, As we get hands in list
-        hand = hands[0]
-        fingers = detector.fingersUp(myHand=hand)
-        
-        print(fingers)
+    if startGame:
+        if statesResult is False:
+            pass
+        # Check For Fingers
+        if hands:
+            # Get First Hand, As we get hands in list
+            hand = hands[0]
+            fingers = detector.fingersUp(myHand=hand)
+            
+            if 1 not in fingers:
+                rock = True
+            
+            if 0 not in fingers:
+                paper = True
+
+            if fingers[1] == 1 and fingers[2] == 1 and 1 not in fingers[2:] and fingers[0]==0:
+                seccior = True
+                
     imageScale = cv2.cvtColor(imageScale, cv2.COLOR_BGR2LUV)
 
     # Assign the resized imageScale to the region in bgImg
@@ -36,8 +52,12 @@ while True:
 
     cv2.imshow("BG Image", bgImg)
     
-    if cv2.waitKey(1) & 0xFF == ord('p'):
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('p'):
         break 
+
+    elif key == ord('s') or key == ord('S'):
+        startGame = True
 
 cam.release()
 cv2.destroyAllWindows()
