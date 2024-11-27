@@ -1,5 +1,6 @@
 import cv2, time
 from cvzone.HandTrackingModule import HandDetector # We load this model for hand tracking
+import cvzone, random
 
 cam = cv2.VideoCapture(0)
 cam.set(3, 640)
@@ -33,7 +34,7 @@ while True:
             timer = time.time() - initialTime
             cv2.putText(bgImg, str(int(timer)), (625,365), cv2.FONT_HERSHEY_PLAIN, 4, (255,0,255), 3)
 
-            if timer > int(4):
+            if timer >= int(4):
                 statesResult = True
                 timer = 0
 
@@ -43,21 +44,38 @@ while True:
                     hand = hands[0]
                     fingers = detector.fingersUp(myHand=hand)
                     print(fingers)
-                    if 1 not in fingers:
-                        rock = True
-                    
-                    if 0 not in fingers:
-                        paper = True
+                    if fingers == [0,0,0,0,0]:
+                        playerMove = 1 # Rock
+                    elif fingers == [1,1,1,1,1]:
+                        playerMove = 2 # Seccior
+                    elif fingers == [0,1,1,0,0]:
+                        playerMove = 3 # Seccior
+                
+                # Choose Random Choice
+                ai_choice = random.randint(1,3)
+                # Load AI Image
+                aiImage = cv2.imread(f'resources/{ai_choice}.png', -1)
 
-                    if fingers[1] == 1 and fingers[2] == 1 and 1 not in fingers[2:] and fingers[0]==0:
-                        seccior = True
+                # Over Lay AI Image
+                bgImg = cvzone.overlayPNG(bgImg, aiImage, (850, 230))
+                
+        else:    
+            cv2.putText(bgImg, "Play: ", (603,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
+            cv2.putText(bgImg, "p", (660,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
+            cv2.putText(bgImg, "Quit: ", (603,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
+            cv2.putText(bgImg, "q", (660,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
     else:    
-        cv2.putText(bgImg, "Play: ", (603,335), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
-        cv2.putText(bgImg, "p", (660,335), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
-        cv2.putText(bgImg, "Quit: ", (603,360), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
-        cv2.putText(bgImg, "q", (660,360), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
-                    
+        cv2.putText(bgImg, "Play: ", (603,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
+        cv2.putText(bgImg, "p", (660,340), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
+        cv2.putText(bgImg, "Quit: ", (603,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
+        cv2.putText(bgImg, "q", (660,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
+                
     imageScale = cv2.cvtColor(imageScale, cv2.COLOR_BGR2LUV)
+    
+    # If it is showing Result, Overlay PNG
+    if statesResult:
+        # Over Lay AI Image
+        bgImg = cvzone.overlayPNG(bgImg, aiImage, (850, 230))
 
     # Assign the resized imageScale to the region in bgImg
     bgImg[145:580, 111:576] = imageScale
@@ -72,6 +90,7 @@ while True:
         startGame = True
         print("Game is Started")
         initialTime = time.time()
+        statesResult = False
 
 cam.release()
 cv2.destroyAllWindows()
