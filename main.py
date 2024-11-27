@@ -1,25 +1,37 @@
-import cv2, time
-from cvzone.HandTrackingModule import HandDetector # We load this model for hand tracking
-import cvzone, random
+from cvzone.HandTrackingModule import HandDetector
+import cvzone, cv2
+import random
 
+# Initialize webcam
 cam = cv2.VideoCapture(0)
 cam.set(3, 640)
-cam.set(4, 680)
+cam.set(4, 480)
 
-# Create Instance of HandDetector
-detector = HandDetector(maxHands=1) # As we need only one hand for Game
+# Create hand detector instance
+detector = HandDetector(maxHands=1)
 
-# We writer timer and states for game
-timer = 0
-statesResult = False
+# Game variables
 startGame = False
-
-# Start Counter For Score
-score = [0, 0] # [AI, Player]
-
-# Set PlayMove Initially None
+timer = 0
+stateResult = False
 playerMove = None
+score = [0, 0]  # [AI, Player]
+maxScore = 5  # Set max score for the game
+resultText = ""
 
+# Function to determine the winner
+def determine_winner(player, ai):
+    global resultText
+    if (player == 1 and ai == 3) or (player == 2 and ai == 1) or (player == 3 and ai == 2):
+        resultText = "You Win!"
+        return 1  # Player wins
+    elif (player == 3 and ai == 1) or (player == 1 and ai == 2) or (player == 2 and ai == 3):
+        resultText = "AI Wins!"
+        return -1  # AI wins
+    else:
+        resultText = "It's a Draw!"
+        return 0  # Draw
+    
 while True:
     # Check background Image Inside Loop, So that when User update Value It changed
     bgImg = cv2.imread('resources/bg.jpg')
