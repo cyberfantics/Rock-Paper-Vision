@@ -16,6 +16,7 @@ Welcome to **Rock-Paper-Vision**, a computer vision-based implementation of the 
   <img src="screenshots/5.png" width="30%" />
   <img src="screenshots/6.png" width="30%" />
 </div>
+
 ---
 
 ## Features
