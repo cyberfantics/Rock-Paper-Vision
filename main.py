@@ -4,7 +4,7 @@ from cvzone.HandTrackingModule import HandDetector # We load this model for hand
 cam = cv2.VideoCapture(0)
 cam.set(3, 640)
 cam.set(4, 680)
-bgImg = cv2.imread('bg.jpg')
+bgImg = cv2.imread('resources/bg.jpg')
 
 # Create Instance of HandDetector
 detector = HandDetector(maxHands=1) # As we need only one hand for Game
@@ -21,6 +21,7 @@ while True:
 
     # We Detect Hand On Scale Image
     hands, image = detector.findHands(imageScale)
+
     imageScale = cv2.cvtColor(imageScale, cv2.COLOR_BGR2LUV)
 
     # Assign the resized imageScale to the region in bgImg
