@@ -72,7 +72,6 @@ while True:
         startGame = True
         print("Game is Started")
         initialTime = time.time()
-        statesResult = True
 
 cam.release()
 cv2.destroyAllWindows()
