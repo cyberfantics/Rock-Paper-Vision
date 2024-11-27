@@ -16,6 +16,10 @@ startGame = False
 
 # Start Counter For Score
 score = [0, 0] # [AI, Player]
+
+# Set PlayMove Initially None
+playerMove = None
+
 while True:
     # Check background Image Inside Loop, So that when User update Value It changed
     bgImg = cv2.imread('resources/bg.jpg')
@@ -29,7 +33,7 @@ while True:
     imageScale = cv2.resize(imageScale, (465, 435))
 
     # We Detect Hand On Scale Image
-    hands, image = detector.findHands(imageScale)
+    hands, image = detector.findHands(imageScale) if startGame else (None, None)
 
     if startGame:
         if statesResult is False:
@@ -81,8 +85,6 @@ while True:
         cv2.putText(bgImg, "Quit: ", (603,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (100,250,55), 2)
         cv2.putText(bgImg, "q", (660,365), cv2.FONT_HERSHEY_PLAIN, 1.4, (255,50,255), 2)
                 
-    imageScale = cv2.cvtColor(imageScale, cv2.COLOR_BGR2LUV)
-    
     # If it is showing Result, Overlay PNG
     if statesResult:
         # Over Lay AI Image
@@ -90,9 +92,14 @@ while True:
 
     cv2.putText(bgImg, str(score[1]), (496, 131), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,1.2, (0,255,0), 4) # Update Player Score
     cv2.putText(bgImg, str(score[0]), (1082, 131), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,1.2, (255,0,255), 4) # Update AI Score
-    # Assign the resized imageScale to the region in bgImg
-    bgImg[145:580, 111:576] = imageScale
+  
+    
+    # Apply the Summer DeepGreen
+    imageScale = cv2.applyColorMap(imageScale, cv2.COLORMAP_DEEPGREEN) if startGame and statesResult else cv2.applyColorMap(imageScale, cv2.COLORMAP_INFERNO)
 
+  # Assign the resized imageScale to the region in bgImg
+    bgImg[145:580, 111:576] = imageScale
+    bgImg = cv2.resize(bgImg, (800, 580))
     cv2.imshow("BG Image", bgImg)
 
     key = cv2.waitKey(1) & 0xFF
