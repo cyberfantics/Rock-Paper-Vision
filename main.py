@@ -16,11 +16,13 @@ while True:
     
     imageScale = cv2.resize(frame, (0, 0), None, 0.95, 0.93)
     imageScale = imageScale[80:540, 85:520]
-
     # Resize imageScale to fit the target region in bgImg (465x435)
     imageScale = cv2.resize(imageScale, (465, 435))
 
+    # We Detect Hand On Scale Image
+    hands, image = detector.findHands(imageScale)
     imageScale = cv2.cvtColor(imageScale, cv2.COLOR_BGR2LUV)
+
     # Assign the resized imageScale to the region in bgImg
     bgImg[145:580, 111:576] = imageScale
 
