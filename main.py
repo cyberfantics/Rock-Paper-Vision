@@ -1,10 +1,13 @@
 import cv2
-# import cvzone
+from cvzone.HandTrackingModule import HandDetector # We load this model for hand tracking
 
 cam = cv2.VideoCapture(0)
 cam.set(3, 640)
 cam.set(4, 680)
 bgImg = cv2.imread('bg.jpg')
+
+# Create Instance of HandDetector
+detector = HandDetector(maxHands=1) # As we need only one hand for Game
 
 while True:
     r, frame = cam.read()
