@@ -4,6 +4,20 @@ Welcome to **Rock-Paper-Vision**, a computer vision-based implementation of the 
 
 ---
 
+## ScreenShots
+<div style="display: flex; justify-content: space-between;">
+  <img src="screenshots/1.png" width="30%" />
+  <img src="screenshots/2.png" width="30%" />
+  <img src="screenshots/3.png" width="30%" />
+</div>
+
+<div style="display: flex; justify-content: space-between;">
+  <img src="screenshots/4.png" width="30%" />
+  <img src="screenshots/5.png" width="30%" />
+  <img src="screenshots/6.png" width="30%" />
+</div>
+---
+
 ## Features
 - **Real-time hand tracking**: Detects gestures using your webcam.
 - **AI opponent**: AI makes random moves for competitive gameplay.
