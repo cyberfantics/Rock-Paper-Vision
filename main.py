@@ -22,6 +22,13 @@ while True:
     # We Detect Hand On Scale Image
     hands, image = detector.findHands(imageScale)
 
+    # Check For Fingers
+    if hands:
+        # Get First Hand, As we get hands in list
+        hand = hands[0]
+        fingers = detector.fingersUp(myHand=hand)
+        
+        print(fingers)
     imageScale = cv2.cvtColor(imageScale, cv2.COLOR_BGR2LUV)
 
     # Assign the resized imageScale to the region in bgImg
