@@ -22,6 +22,13 @@ maxScore = 5  # Set max score for the game
 resultText = ""
 result = None 
 
+# Create Video Of Game
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+# Create VideoWriter object to write the video
+output = cv2.VideoWriter(filename='output.mp4', fourcc=fourcc,fps=30, frameSize=(950, 650))
+# Variable To Check When To write Video
+writeVideo = False
+
 # Function to determine the winner
 def determine_winner(player, ai):
     global resultText
@@ -140,6 +147,8 @@ while True:
     bgImg[145:580, 111:576] = frame
     bgImg = cv2.resize(bgImg, (950, 650))
     cv2.imshow("Rock Paper Scissors", bgImg)
+    if writeVideo:
+        output.write(bgImg)
 
     # Key press handling
     key = cv2.waitKey(1) & 0xFF
@@ -154,7 +163,13 @@ while True:
         score = [0, 0]
         startGame = False
         stateResult = False
+    elif key == ord('s'):
+        writeVideo = True
+    elif key == ord('v'):
+        writeVideo = False
+        output.release()
 
 # Release resources
 cam.release()
+output.release()
 cv2.destroyAllWindows()
