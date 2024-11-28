@@ -72,6 +72,13 @@ Welcome to **Rock-Paper-Vision**, a computer vision-based implementation of the 
 - **Record Game:** Press `S` to record the Game.
 ---
 
+## Video Demo
+Check out the gameplay video on YouTube:
+
+[![Watch the gameplay video](https://img.youtube.com/vi/imOyABws1ro/hqdefault.jpg)](https://www.youtube.com/watch?v=imOyABws1ro)
+
+---
+
 # Author
 **Syed Mansoor ul Hassan Bukhari**  
 [GitHub](https://github.com/cyberfantics) | [LinkedIn](https://www.linkedin.com/in/mansoor-bukhari/)
