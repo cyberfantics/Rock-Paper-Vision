@@ -163,9 +163,9 @@ while True:
         score = [0, 0]
         startGame = False
         stateResult = False
-    elif key == ord('s'):
+    elif key == ord('s') and writeVideo == False:
         writeVideo = True
-    elif key == ord('v'):
+    elif key == ord('s') and writeVideo:
         writeVideo = False
         output.release()
 
