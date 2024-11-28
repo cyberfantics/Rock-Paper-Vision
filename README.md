@@ -69,6 +69,7 @@ Welcome to **Rock-Paper-Vision**, a computer vision-based implementation of the 
 - **Play:** Press `P` to start the game.
 - **Quit:** Press `Q` to exit the game.
 - **Restart:** Press `R` to restart the game.
+- **Record Game:** Press `S` to record the Game.
 ---
 
 # Author
