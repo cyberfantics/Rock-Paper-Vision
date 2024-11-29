@@ -22,10 +22,24 @@ maxScore = 5  # Set max score for the game
 resultText = ""
 result = None 
 
+# Camera Frame Variable
+# Define the region where the frame will be inserted
+top_left_y = 145
+bottom_right_y = 580
+top_left_x = 111
+bottom_right_x = 576
+# Calculate the size of the region where the frame will be inserted
+region_height = bottom_right_y - top_left_y
+region_width = bottom_right_x - top_left_x
+
+# Instruction are Displaying
+instruction = True
+instruction_image = cv2.imread('resources/instructions.png')
+
 # Create Video Of Game
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 # Create VideoWriter object to write the video
-output = cv2.VideoWriter(filename='output.mp4', fourcc=fourcc,fps=30, frameSize=(950, 650))
+output = cv2.VideoWriter(filename='output.mp4', fourcc=fourcc,fps=40, frameSize=(950, 650))
 # Variable To Check When To write Video
 writeVideo = False
 
@@ -53,8 +67,11 @@ while True:
     # Resize and crop webcam feed
     frame = cv2.resize(frame, (0, 0), fx=0.95, fy=0.93)
     frame = frame[80:540, 85:520]
-    frame = cv2.resize(frame, (465, 435))
-
+    if not instruction:
+        frame = cv2.resize(frame, (region_width, region_height))
+    else:
+        frame = cv2.resize(instruction_image, (region_width, region_height))
+    
     # Detect hands if game is running
     hands, image = detector.findHands(frame) if startGame else (None, None)
 
@@ -142,9 +159,8 @@ while True:
 
      # Apply the Summer DeepGreen
     frame = cv2.applyColorMap(frame, cv2.COLORMAP_DEEPGREEN) if startGame and not stateResult else cv2.applyColorMap(frame, cv2.COLORMAP_INFERNO)
-
     # Overlay the webcam feed
-    bgImg[145:580, 111:576] = frame
+    bgImg[top_left_y:bottom_right_y, top_left_x:bottom_right_x] = frame
     bgImg = cv2.resize(bgImg, (950, 650))
     cv2.imshow("Rock Paper Scissors", bgImg)
     if writeVideo:
@@ -168,6 +184,10 @@ while True:
     elif key == ord('s') and writeVideo:
         writeVideo = False
         output.release()
+    elif key == ord('i'):
+        instruction = True
+    elif key == ord('c'):
+        instruction = False
 
 # Release resources
 cam.release()
