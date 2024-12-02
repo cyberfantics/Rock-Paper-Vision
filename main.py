@@ -36,10 +36,6 @@ region_width = bottom_right_x - top_left_x
 instruction = True
 instruction_image = cv2.imread('resources/instructions.png')
 
-# Create Video Of Game
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-# Create VideoWriter object to write the video
-output = cv2.VideoWriter(filename='output.mp4', fourcc=fourcc,fps=40, frameSize=(950, 650))
 # Variable To Check When To write Video
 writeVideo = False
 
@@ -95,9 +91,11 @@ while True:
                     elif fingers == [0, 1, 1, 0, 0]:
                         playerMove = 3  # Scissors
                     else:
+                        instruction = True
                         playerMove = None  # Invalid move
                         resultText = "Invalid Move!"  # Show invalid move message
                 else:
+                    instruction = True
                     playerMove = None  # No hand detected
                     resultText = "No Hand Detected!"  # No hand detected message
 
@@ -171,6 +169,7 @@ while True:
     if key == ord("q"):
         break
     elif key == ord("p"):
+        instruction = False
         startGame = True
         initialTime = time.time()
         stateResult = False
@@ -180,6 +179,11 @@ while True:
         startGame = False
         stateResult = False
     elif key == ord('s') and writeVideo == False:
+        # Create Video Of Game
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        # Create VideoWriter object to write the video
+        output = cv2.VideoWriter(filename='output.mp4', fourcc=fourcc,fps=40, frameSize=(950, 650))
+        # Make Write Video equal to True
         writeVideo = True
     elif key == ord('s') and writeVideo:
         writeVideo = False
