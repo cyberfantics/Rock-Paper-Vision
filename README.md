@@ -6,7 +6,7 @@ Welcome to **Rock-Paper-Vision**, a computer vision-based implementation of the 
 
 ## ScreenShots
 <div style="display: flex; justify-content: space-between;">
-  <img src="screenshots/1.png" width="30%" />
+  <img src="screenshots/.1.png" width="30%" />
   <img src="screenshots/2.png" width="30%" />
   <img src="screenshots/3.png" width="30%" />
 </div>
